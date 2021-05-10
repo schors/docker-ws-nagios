@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+        
+        nagtlg:
+                build:
+                        context: ./nagtlg
+                container_name: nagtlg
+                volumes:
+                        - vnagios:/usr/local/vnagios
+                logging:
+                        driver: syslog
+                        options:
+                                tag: nagtlg
+                restart: always
+
+        nagios:
+                build:
+                        context: ./nagios
+                container_name: nagios
+                pid: "host"
+                privileged: true
+                network_mode: "host"
+                volumes:
+                        - vnagios:/usr/local/vnagios
+                logging:
+                        driver: syslog
+                        options:
+                                tag: nagios
+                restart: always
+
+        ws-nagios:
+                build:
+                        context: ./ws-nagios
+                container_name: ws-nagios
+                env_file:
+                        - ./ws-nagios/etc/apache.env
+                ports:
+                        - "80:80"
+                volumes:
+                        - vnagios:/usr/local/vnagios
+                logging:
+                        driver: syslog
+                        options:
+                                tag: ws-nagios
+                restart: always
+
+volumes:
+       vnagios:
+

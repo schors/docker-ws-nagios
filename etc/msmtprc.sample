@@ -1,0 +1,15 @@
+defaults
+auth on
+logfile -
+from noreply@example.tld
+domain example.tld
+
+account default
+host mail.example.tld
+tls             on
+tls_starttls    off
+tls_trust_file   /etc/ssl/certs/ca-certificates.crt
+port 465
+user user@example.tld
+password ,tkt,thlf
+
