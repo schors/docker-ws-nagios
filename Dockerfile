@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.4-apache-trixie
 MAINTAINER Phil Kulin <schors@gmail.com>
 
 ENV USER_GID=800
@@ -20,9 +20,9 @@ ENV APACHE_RUN_USER        nagios
 ENV APACHE_RUN_GROUP       nagios
 ENV NAGIOS_TIMEZONE        UTC
 ENV DEBIAN_FRONTEND        noninteractive
-ENV NAGIOS_BRANCH          nagios-4.4.6
-ENV NAGIOS_PLUGINS_BRANCH  release-2.3.3
-ENV NRPE_BRANCH            nrpe-4.0.3
+ENV NAGIOS_BRANCH          nagios-4.5.14
+ENV NAGIOS_PLUGINS_BRANCH  release-2.4.12
+ENV NRPE_BRANCH            nrpe-4.1.3
 
 VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/tmp"
 
@@ -57,7 +57,6 @@ RUN apt-get update && apt-get dist-upgrade -y && apt-get autoremove -y && \
         locales-all                         \
         libfreetype6-dev                    \
         libjpeg62-turbo-dev                 \
-        libmcrypt-dev                       \
         libpng-dev                          \
         libicu-dev                          \
         libssl-dev                          \
@@ -67,7 +66,7 @@ RUN apt-get update && apt-get dist-upgrade -y && apt-get autoremove -y && \
         libtidy-dev                         \
         libexif-dev                         \
         libcurl4-openssl-dev                \
-        libc-client-dev libkrb5-dev         \
+        libkrb5-dev         \
         imagemagick                         \
         mailutils                           \
         libgd-dev                           \
@@ -129,7 +128,7 @@ RUN cd /tmp                                                                  && 
 
 RUN apt-get install -q -y  --no-install-recommends libonig-dev
 
-RUN docker-php-ext-install -j$(nproc) gettext mbstring curl ctype json iconv intl opcache bcmath sockets sysvmsg sysvsem sysvshm pcntl\
+RUN docker-php-ext-install -j$(nproc) gettext mbstring curl ctype iconv intl opcache bcmath sockets sysvmsg sysvsem sysvshm pcntl\
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
@@ -146,6 +145,7 @@ COPY etc/ssl-env.conf /etc/apache2/conf-available/
 COPY etc/nagios.conf /etc/apache2/conf-available/
 COPY etc/msmtprc /etc/msmtprc
 COPY logos/ /usr/local/nagios/share/images/logos/
+COPY media/ /usr/local/nagios/share/media/
 
 RUN a2enmod headers \
     && a2enmod expires \
